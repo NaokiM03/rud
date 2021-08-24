@@ -58,8 +58,6 @@ mod rud_arg {
 mod user_defined_fn {
     use crate::token::tests::create_user_defined_fn_node;
 
-    use super::*;
-
     #[test]
     fn new() {
         // Testing of this function is secured by to_code().

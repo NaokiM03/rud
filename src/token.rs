@@ -25,9 +25,38 @@ pub enum Reserved {
     Fn,
 }
 
+impl Reserved {
+    pub fn is_reserved_word(s: &str) -> bool {
+        let keywords = ["pub", "fn"];
+        keywords.contains(&s)
+    }
+
+    pub fn from(s: &str) -> Reserved {
+        match s {
+            "pub" => Reserved::Pub,
+            "fn" => Reserved::Fn,
+            _ => panic!("{} is not reserved word.", s),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum RudStdFn {
     Puts,
+}
+
+impl RudStdFn {
+    pub fn is_rud_std_fn(s: &str) -> bool {
+        let keywords = ["puts"];
+        keywords.contains(&s)
+    }
+
+    pub fn from(s: &str) -> RudStdFn {
+        match s {
+            "puts" => RudStdFn::Puts,
+            _ => panic!("{} is not rud standard function.", s),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -111,19 +140,19 @@ impl TokenKind {
 }
 
 #[derive(Debug, Clone)]
-struct TokenPos {
+pub struct TokenPos {
     start: usize,
     end: usize,
 }
 
 impl TokenPos {
-    fn new(start: usize, end: usize) -> TokenPos {
+    pub fn new(start: usize, end: usize) -> TokenPos {
         TokenPos { start, end }
     }
 }
 
 #[derive(Debug, Clone)]
-struct Token {
+pub struct Token {
     kind: TokenKind,
     pos: TokenPos,
 }
@@ -136,36 +165,36 @@ impl Token {
 }
 
 impl Token {
-    fn new_indent(pos: TokenPos) -> Token {
+    pub fn new_indent(pos: TokenPos) -> Token {
         Token::new(TokenKind::Indent, pos)
     }
 
-    fn new_reserved(reserved: Reserved, pos: TokenPos) -> Token {
+    pub fn new_reserved(reserved: Reserved, pos: TokenPos) -> Token {
         Token::new(TokenKind::Reserved(reserved), pos)
     }
 
-    fn new_punct(punct: Punct, pos: TokenPos) -> Token {
+    pub fn new_punct(punct: Punct, pos: TokenPos) -> Token {
         Token::new(TokenKind::Punct(punct), pos)
     }
 
-    fn new_identifier(identifier: String, pos: TokenPos) -> Token {
+    pub fn new_identifier(identifier: String, pos: TokenPos) -> Token {
         Token::new(TokenKind::Identifier(identifier), pos)
     }
 
-    fn new_string_lit(string_lit: String, pos: TokenPos) -> Token {
+    pub fn new_string_lit(string_lit: String, pos: TokenPos) -> Token {
         Token::new(TokenKind::StringLit(string_lit), pos)
     }
 
-    fn new_rud_std_fn(rud_std_fn: RudStdFn, pos: TokenPos) -> Token {
+    pub fn new_rud_std_fn(rud_std_fn: RudStdFn, pos: TokenPos) -> Token {
         Token::new(TokenKind::RudStdFn(rud_std_fn), pos)
     }
 
-    fn new_line_term(pos: TokenPos) -> Token {
+    pub fn new_line_term(pos: TokenPos) -> Token {
         Token::new(TokenKind::LineTerm, pos)
     }
 }
 
-type Tokens = Vec<Token>;
+pub type Tokens = Vec<Token>;
 type SplitedTokens = Vec<Tokens>;
 
 trait Parse {
