@@ -56,7 +56,7 @@ mod rud_arg {
 }
 
 mod user_defined_fn {
-    use crate::token::tests::create_user_defined_fn_node;
+    use crate::{node::CodeGenerator, token::tests::create_user_defined_fn_node};
 
     #[test]
     fn new() {
@@ -78,6 +78,8 @@ mod node {
     use crate::token::tests::*;
 
     mod rud_std_fn_node {
+        use crate::node::CodeGenerator;
+
         use super::*;
 
         #[test]
@@ -90,6 +92,8 @@ mod node {
     }
 
     mod user_defined_fn {
+        use crate::node::CodeGenerator;
+
         use super::*;
 
         #[test]

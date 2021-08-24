@@ -197,7 +197,7 @@ impl Token {
 pub type Tokens = Vec<Token>;
 type SplitedTokens = Vec<Tokens>;
 
-trait Parse {
+pub trait Parse {
     fn split(self) -> SplitedTokens;
 
     fn to_rud_std_fn_node(self) -> Node;

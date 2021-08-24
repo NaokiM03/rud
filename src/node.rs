@@ -66,7 +66,10 @@ pub struct RudArg {
 
 impl RudArg {
     pub fn new(name: &str, rud_type: RudType) -> RudArg {
-        RudArg { name: name.to_string(), rud_type }
+        RudArg {
+            name: name.to_string(),
+            rud_type,
+        }
     }
 }
 
@@ -80,7 +83,13 @@ pub struct UserDefinedFn {
 }
 
 impl UserDefinedFn {
-    pub fn new(is_public: bool, name: &str, args: Vec<RudArg>, return_type: RudType, inner: NodeList) -> UserDefinedFn {
+    pub fn new(
+        is_public: bool,
+        name: &str,
+        args: Vec<RudArg>,
+        return_type: RudType,
+        inner: NodeList,
+    ) -> UserDefinedFn {
         UserDefinedFn {
             is_public,
             name: name.to_owned(),
@@ -121,8 +130,12 @@ pub enum Node {
     UserDefinedFn(UserDefinedFn),
 }
 
-impl Node {
-    pub fn to_code(self) -> String {
+pub trait CodeGenerator {
+    fn to_code(self) -> String;
+}
+
+impl CodeGenerator for Node {
+    fn to_code(self) -> String {
         match self {
             Node::RudStdFn(rud_std_fn) => rud_std_fn.to_code(),
             Node::UserDefinedFn(user_defined_fn) => user_defined_fn.to_code(),

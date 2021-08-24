@@ -141,7 +141,7 @@ impl Source {
     }
 }
 
-trait Lexer {
+pub trait Lexer {
     fn skip_whitespace(&mut self);
     fn try_get_line_term_token(&mut self) -> Option<Token>;
     fn try_get_indent_token(&mut self) -> Option<Token>;
