@@ -1,7 +1,7 @@
 use std::collections::LinkedList;
 
-#[derive(Debug, Clone)]
-pub enum RudStr {
+#[derive(Debug, Clone, PartialEq)]
+enum RudStr {
     StringLit(String),
     // Expr,
 }
@@ -16,9 +16,16 @@ impl RudStr {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum RudStdFn {
     Puts { s: RudStr },
+}
+
+impl RudStdFn {
+    pub fn new_from_string(s: &str) -> RudStdFn {
+        let rud_str = RudStr::StringLit(s.to_string());
+        RudStdFn::Puts { s: rud_str }
+    }
 }
 
 impl RudStdFn {
@@ -58,18 +65,30 @@ pub struct RudArg {
 }
 
 impl RudArg {
-    pub fn new(name: String, rud_type: RudType) -> RudArg {
-        RudArg { name, rud_type }
+    pub fn new(name: &str, rud_type: RudType) -> RudArg {
+        RudArg { name: name.to_string(), rud_type }
     }
 }
 
-#[derive(Debug, Clone)]
-struct UserDefinedFn {
+#[derive(Debug, Clone, PartialEq)]
+pub struct UserDefinedFn {
     is_public: bool,
     name: String,
     args: Vec<RudArg>,
     return_type: RudType,
     inner: Box<NodeList>,
+}
+
+impl UserDefinedFn {
+    pub fn new(is_public: bool, name: &str, args: Vec<RudArg>, return_type: RudType, inner: NodeList) -> UserDefinedFn {
+        UserDefinedFn {
+            is_public,
+            name: name.to_owned(),
+            args,
+            return_type,
+            inner: Box::new(inner),
+        }
+    }
 }
 
 impl UserDefinedFn {
@@ -86,9 +105,9 @@ impl UserDefinedFn {
         if self.return_type != RudType::None {}
         s.push('{');
         s.push('\n');
-        for node_kind in self.inner.clone().into_iter() {
+        for node in self.inner.clone().into_iter() {
             s.push_str("    ");
-            s.push_str(&node_kind.to_code());
+            s.push_str(&node.to_code());
             s.push('\n');
         }
         s.push('}');
@@ -96,7 +115,7 @@ impl UserDefinedFn {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Node {
     RudStdFn(RudStdFn),
     UserDefinedFn(UserDefinedFn),
@@ -114,5 +133,7 @@ impl Node {
 
 pub type NodeList = LinkedList<Node>;
 
+// -------------------------------------------------------------------------------------------------
+
 #[cfg(test)]
-mod tests;
+pub mod tests;
