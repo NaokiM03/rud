@@ -2,31 +2,7 @@ use std::ops::Not;
 
 use crate::token::{Punct, Reserved, RudStdFn, Token, TokenPos, Tokens};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-struct Char(char);
-
-const WHITE_SPACE: Char = Char(' ');
-const LINE_TERM: Char = Char('\n');
-const LEFT_PARENTHESIS: Char = Char('(');
-const RIGHT_PARENTHESIS: Char = Char(')');
-const ASSIGN: Char = Char('=');
-const DOUBLE_QUOTATION: Char = Char('"');
-const UNDERSCORE: Char = Char('_');
-
-impl Char {
-    fn to_char(self) -> char {
-        self.0
-    }
-    fn is_whitespace(self) -> bool {
-        self == WHITE_SPACE
-    }
-    fn is_ascii_punctuation(self) -> bool {
-        matches!(self.0, '!'..='/' | ':'..='@' | '['..='`' | '{'..='~')
-    }
-    fn is_ascii_alphanumeric(self) -> bool {
-        matches!(self.0, '0'..='9' | 'A'..='Z' | 'a'..='z')
-    }
-}
+use rud_char::Char;
 
 // #[derive(Debug, Clone)]
 // pub struct Line {
@@ -70,7 +46,10 @@ pub struct Source {
 
 impl Source {
     pub fn new(source_code: &str) -> Source {
-        let code = source_code.chars().map(|x| Char(x)).collect::<Vec<Char>>();
+        let code = source_code
+            .chars()
+            .map(|x| Char::new(x))
+            .collect::<Vec<Char>>();
         let len = code.len();
         let cursor = Cursor::new();
         Source { code, len, cursor }
@@ -98,7 +77,7 @@ impl Source {
         let mut s = "".to_string();
         while pos < self.len {
             match self.get_char(pos) {
-                c if c.is_ascii_alphanumeric() || c == UNDERSCORE || c == LINE_TERM => {
+                c if c.is_alphabetic() || c.is_number() || c.is_underscore() || c.is_line_term() => {
                     s.push(c.to_char());
                 }
                 c if c.is_whitespace() => {
@@ -133,7 +112,7 @@ impl Source {
     }
 
     fn is_line_term(&self) -> bool {
-        self.peek() == LINE_TERM
+        self.peek().is_line_term()
     }
 
     fn is_punct(&self) -> bool {
@@ -236,11 +215,11 @@ impl Lexer for Source {
     }
 
     fn try_get_string_lit_token(&mut self) -> Option<Token> {
-        if self.peek() == DOUBLE_QUOTATION {
+        if self.peek().is_double_quotation() {
             let start = self.cursor.pos;
             self.cursor.next();
             let mut s = "".to_string();
-            while self.peek() != DOUBLE_QUOTATION {
+            while self.peek().is_double_quotation().not() {
                 s.push(self.peek().to_char());
                 self.cursor.next();
             }
@@ -258,9 +237,9 @@ impl Lexer for Source {
         }
         let pos = TokenPos::new(self.cursor.pos, self.cursor.pos);
         let token = match self.peek() {
-            LEFT_PARENTHESIS => Some(Token::new_punct(Punct::LeftParenthesis, pos)),
-            RIGHT_PARENTHESIS => Some(Token::new_punct(Punct::RightParenthesis, pos)),
-            ASSIGN => Some(Token::new_punct(Punct::Assign, pos)),
+            c if c.is_left_parenthesis() => Some(Token::new_punct(Punct::LeftParenthesis, pos)),
+            c if c.is_right_parenthesis() => Some(Token::new_punct(Punct::RightParenthesis, pos)),
+            c if c.is_assign() => Some(Token::new_punct(Punct::Assign, pos)),
             _ => None,
         };
         self.cursor.next();

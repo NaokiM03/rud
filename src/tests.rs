@@ -15,7 +15,8 @@ fn source2code() {
 }"#;
 
     let mut source = Source::new(rud_code);
-    let rust_code = source.to_tokens().to_user_defined_fn().to_code();
+    let tokens = source.to_tokens();
+    let rust_code = tokens.to_user_defined_fn().to_code();
 
     assert_eq!(rust_code, expect);
 }

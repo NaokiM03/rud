@@ -1,8 +1,7 @@
 [package]
-name = "rud"
+name = "rud-char"
 version = "0.1.0"
 authors = ["NaokiM03 <naokim03.lib+dev@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-rud-char = { path = "char" }

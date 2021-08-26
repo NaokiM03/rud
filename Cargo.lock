@@ -3,3 +3,10 @@
 [[package]]
 name = "rud"
 version = "0.1.0"
+dependencies = [
+ "rud-char",
+]
+
+[[package]]
+name = "rud-char"
+version = "0.1.0"
